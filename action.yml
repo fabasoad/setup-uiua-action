@@ -1,0 +1,74 @@
+---
+name: "Setup Uiua"
+author: Yevhen Fabizhevskyi
+description: "This action installs Uiua language interpreter."
+branding:
+  icon: terminal
+  color: gray-dark
+inputs:
+  version:
+    description: Uiua version. Defaults to the latest version.
+    required: false
+    default: "latest"
+  force:
+    description: |
+      If "false" skips installation if Uiua is already installed. If "true"
+      installs Uiua in any case. Defaults to "false".
+    required: false
+    default: "false"
+  github-token:
+    description: |
+      GitHub token that is used to send requests to GitHub API such as downloading
+      asset. Defaults to the token provided by GitHub Actions environment.
+    required: false
+    default: ${{ github.token }}
+outputs:
+  installed:
+    description: Whether Uiua was installed or not.
+    value: "${{ steps.install-uiua.outcome == 'success' }}"
+runs:
+  using: "composite"
+  steps:
+    - name: Validate inputs
+      env:
+        INPUT_VERSION: "${{ inputs.version }}"
+        INPUT_FORCE: "${{ inputs.force }}"
+      run: ./validate-inputs.sh "${INPUT_VERSION}" "${INPUT_FORCE}"
+      shell: sh
+      working-directory: ${{ github.action_path }}/src
+
+    - name: Collect info
+      id: info
+      env:
+        INPUT_FORCE: "${{ inputs.force }}"
+      run: ./collect-info.sh "${INPUT_FORCE}"
+      shell: sh
+      working-directory: ${{ github.action_path }}/src
+
+    - name: Download binary
+      if: ${{ steps.info.outputs.bin-installed == 'false' }}
+      id: download-binary
+      uses: robinraju/release-downloader@v1
+      with:
+        repository: "uiua-lang/uiua"
+        latest: "${{ inputs.version == 'latest' }}"
+        tag: "${{ inputs.version == 'latest' && '' || inputs.version }}"
+        fileName: "uiua-bin-${{ startsWith(runner.arch, 'ARM') && 'aarch64' || 'x86_64' }}-${{ runner.os == 'macOS' && 'apple-darwin' || (runner.os == 'Windows' && 'pc-windows-msvc' || 'unknown-linux-gnu') }}.zip"
+        extract: "true"
+        out-file-path: "${{ steps.info.outputs.bin-dir }}"
+        token: "${{ inputs.github-token }}"
+
+    - name: Install Uiua
+      if: ${{ steps.info.outputs.bin-installed == 'false' }}
+      id: install-uiua
+      run: |
+        if [ "${RUNNER_OS}" != "Windows" ]; then
+          chmod +x uiua
+        fi
+        echo "$(pwd)" >> "$GITHUB_PATH"
+      shell: sh
+      working-directory: ${{ steps.info.outputs.bin-path }}
+
+    - name: Print version
+      run: uiua --version
+      shell: sh
