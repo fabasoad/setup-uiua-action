@@ -60,8 +60,11 @@ jobs:
         uses: ./
         with:
           version: "${{ matrix.version }}"
-      - name: Print version
-        run: uiua --version
+      - name: Prepare file
+        run: echo '"Hello, World!" o' > hello-world.ua
+      - name: Validate command
+        run: |
+          [ "$(uiua run hello-world.ua)" = "Hello, World!" ] || exit 1
   test-force:
     name: Test force
     runs-on: ubuntu-latest

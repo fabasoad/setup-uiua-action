@@ -45,3 +45,7 @@ None.
 |-----------|-----------------------------------|---------|
 | installed | Whether Uiua was installed or not | `true`  |
 <!-- prettier-ignore-end -->
+
+## Contributions
+
+![Alt](https://repobeats.axiom.co/api/embed/d84692b9fb0ec9a6f1b0a28d840e66fb7361e0b1.svg "Repobeats analytics image")
