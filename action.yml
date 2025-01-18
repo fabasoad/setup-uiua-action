@@ -53,6 +53,7 @@ runs:
         repository: "uiua-lang/uiua"
         latest: "${{ inputs.version == 'latest' }}"
         tag: "${{ inputs.version == 'latest' && '' || inputs.version }}"
+        # yamllint disable-line rule:line-length
         fileName: "uiua-bin-${{ startsWith(runner.arch, 'ARM') && 'aarch64' || 'x86_64' }}-${{ runner.os == 'macOS' && 'apple-darwin' || (runner.os == 'Windows' && 'pc-windows-msvc' || 'unknown-linux-gnu') }}.zip"
         extract: "true"
         out-file-path: "${{ steps.info.outputs.bin-dir }}"
