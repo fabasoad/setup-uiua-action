@@ -28,7 +28,7 @@ None.
 - uses: fabasoad/setup-uiua-action@v0
   with:
     # (Optional) Uiua version. Defaults to "latest".
-    version: "0.14.1"
+    version: "0.17.3"
     # (Optional) If "false" skips installation if Uiua is already installed.
     # If "true" installs Uiua in any case. Defaults to "false".
     force: "false"
