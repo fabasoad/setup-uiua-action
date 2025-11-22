@@ -33,7 +33,7 @@ check_enum() {
 # check_semver "my-valid-semver-3" "latest"
 # check_semver "my-invalid-semver" "1.2.3-rc1"
 check_semver() {
-  if ! echo "${2}" | grep -Eq '^(latest|[0-9]+\.[0-9]+\.[0-9]+)$'; then
+  if ! echo "${2}" | grep -Eq '^(latest|[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9\.\-]+)?)$'; then
     msg="\"${1}\" parameter is invalid. \"${2}\" is not a valid semver."
     echo "::error title=Invalid parameter::${msg}"
     exit 1
