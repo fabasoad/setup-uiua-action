@@ -81,11 +81,10 @@ jobs:
         uses: ./
         with:
           version: "${{ matrix.version }}"
-      - name: Debug
-        run: uiua run hello-world.ua
       - name: Validate command
         run: |
-          [ "$(uiua run hello-world.ua 2>&1)" = '"Hello, World"' ] || exit 1
+          output="$(uiua run hello-world.ua 2>&1 | awk '{$1=$1; print}')"
+          [ "${output}" = '"Hello, World"' ] || exit 1
   test-force:
     name: Test force
     runs-on: ubuntu-latest
