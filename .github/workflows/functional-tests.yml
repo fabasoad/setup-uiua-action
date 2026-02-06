@@ -24,6 +24,7 @@ jobs:
     name: Get 3 latest versions
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions: {}
     outputs:
       versions: ${{ steps.prepare-list.outputs.versions }}
     steps:
@@ -66,6 +67,8 @@ jobs:
     needs: [get-versions]
     runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -73,11 +76,13 @@ jobs:
         version: ${{ fromJSON(needs.get-versions.outputs.versions) }}
     steps:
       - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Uiua
         uses: ./
         with:
           version: "${{ matrix.version }}"
+      - name: Debug
+        run: uiua run hello-world.ua
       - name: Validate command
         run: |
           [ "$(uiua run hello-world.ua 2>&1)" = '"Hello, World"' ] || exit 1
@@ -85,13 +90,15 @@ jobs:
     name: Test force
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         force: ["true", "false"]
     steps:
       - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Uiua 1
         id: setup-uiua-1
         uses: ./
