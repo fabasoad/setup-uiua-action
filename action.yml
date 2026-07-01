@@ -51,10 +51,10 @@ runs:
       uses: robinraju/release-downloader@v1
       with:
         repository: "uiua-lang/uiua"
-        latest: "false"
-        tag: "${{ inputs.version }}"
+        latest: "${{ inputs.version == 'latest' }}"
+        tag: "${{ case(inputs.version == 'latest', '', inputs.version) }}"
         # yamllint disable-line rule:line-length
-        fileName: "uiua-bin-${{ startsWith(runner.arch, 'ARM') && 'aarch64' || 'x86_64' }}-${{ runner.os == 'macOS' && 'apple-darwin' || (runner.os == 'Windows' && 'pc-windows-msvc' || 'unknown-linux-gnu') }}.zip"
+        fileName: "uiua-bin-${{ case(startsWith(runner.arch, 'ARM'), 'aarch64', 'x86_64') }}-${{ case(runner.os == 'macOS', 'apple-darwin', runner.os == 'Windows', 'pc-windows-msvc', 'unknown-linux-gnu') }}.zip"
         extract: "true"
         out-file-path: "${{ steps.info.outputs.bin-dir }}"
         token: "${{ inputs.github-token }}"
